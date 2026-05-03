@@ -1,0 +1,26 @@
+services:
+  frontend:
+    image: node:16-slim
+    container_name: denkarutools-frontend
+    volumes:
+      - ./frontend:/app
+      - ./scripts:/scripts:ro # Read only
+    working_dir: /app
+    ports:
+      - "8081:8080"
+    tty: true
+    stdin_open: true
+    entrypoint: ["sh", "/scripts/frontend-entrypoint.sh"]
+
+  backend:
+    image: golang:1.24-bookworm
+    container_name: denkarutools-backend
+    volumes:
+      - .:/app
+      - ./scripts:/scripts:ro
+    working_dir: /app
+    ports:
+      - "8080:8080"
+    tty: true
+    stdin_open: true
+    entrypoint: ["sh", "/scripts/backend-entrypoint.sh"]
