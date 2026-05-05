@@ -4,7 +4,7 @@ services:
     container_name: denkarutools-frontend
     volumes:
       - ./frontend:/app
-      - ./scripts:/scripts:ro # Read only
+      - ./scripts:/scripts:ro
     working_dir: /app
     ports:
       - "8081:8080"
