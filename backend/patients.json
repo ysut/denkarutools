@@ -1,5 +1,0 @@
-[
-    { "id": "P001", "name": "TEST HOGE", "age": 72, "last_visit": "2026-05-01" },
-    { "id": "P002", "name": "名前 FUGA", "age": 65, "last_visit": "2026-05-03" },
-    { "id": "P003", "name": "テスト PIYO", "age": 80, "last_visit": "2026-05-05" }
-  ]

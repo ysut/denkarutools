@@ -1,47 +1,28 @@
 <template>
   <div id="app">
-    <h1>患者一覧 (NASデータ)</h1>
-    <table border="1" style="margin: auto; border-collapse: collapse; width: 80%;">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>名前</th>
-          <th>年齢</th>
-          <th>最終受診日</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="patient in patients" :key="patient.id">
-          <td>{{ patient.id }}</td>
-          <td>{{ patient.name }}</td>
-          <td>{{ patient.age }}歳</td>
-          <td>{{ patient.last_visit }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <nav class="nav-bar">
+      <button @click="currentView = 'TopMenu'">トップ</button>
+      <button @click="currentView = 'Chemocalc'">化学療法計算</button>
+      <button @click="currentView = 'PatientManager'">患者管理</button>
+    </nav>
+    <hr>
+    <component :is="currentView" @changeView="currentView = $event" />
   </div>
 </template>
 
 <script>
+import TopMenu from './components/TopMenu.vue'
+import Chemocalc from './components/Chemocalc.vue'
+import PatientManager from './components/PatientManager.vue'
+
 export default {
-  data() {
-    return {
-      patients: []
-    }
-  },
-  mounted() {
-    fetch('http://localhost:8080/api/patients')
-      .then(response => response.json())
-      .then(data => {
-        this.patients = data;
-      })
-      .catch(err => console.error("通信エラー:", err));
-  }
+  components: { TopMenu, Chemocalc, PatientManager },
+  data() { return { currentView: 'TopMenu' } }
 }
 </script>
 
 <style>
-#app { font-family: sans-serif; text-align: center; margin-top: 40px; }
-th { background-color: #f2f2f2; padding: 10px; }
-td { padding: 10px; }
-</table >
+.nav-bar { background: #35495e; padding: 10px; display: flex; gap: 10px; justify-content: center; }
+.nav-bar button { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+#app { font-family: sans-serif; color: #2c3e50; }
+</style>
