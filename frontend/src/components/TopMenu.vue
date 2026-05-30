@@ -10,6 +10,10 @@
         <h2>📋 患者管理アプリ</h2>
         <p>NASデータ読み書き・管理</p>
       </div>
+      <div class="menu-card" @click="$emit('changeView', 'PreopSummary')">
+        <h2>📝 術前サマリー</h2>
+        <p>術前情報の入力・保存・コピー</p>
+      </div>
     </div>
   </div>
 </template>

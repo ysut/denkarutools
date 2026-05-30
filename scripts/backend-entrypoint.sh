@@ -28,5 +28,5 @@ if [ ! -f "go.mod" ]; then
 fi
 
 go mod tidy
-echo "✨ Starting Go backend..."
-exec go run backend/main.go
+echo "Starting Go backend..."
+exec go run ./backend

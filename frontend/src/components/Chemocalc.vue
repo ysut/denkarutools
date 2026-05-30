@@ -2,7 +2,6 @@
   <div class="calc-container">
     <h1>化学療法計算機</h1>
 
-    <!-- 性別選択 -->
     <div class="section">
       <label><strong>性別</strong></label><br>
       <input type="radio" v-model="inputs.sex" value="female"> 女性
@@ -10,7 +9,6 @@
       <input type="radio" v-model="inputs.sex" value="other"> その他
     </div>
 
-    <!-- 共通入力 -->
     <div class="input-grid">
       <div class="field"><label>年齢 (歳)</label><input type="number" v-model.number="inputs.age"></div>
       <div class="field"><label>身長 (cm)</label><input type="number" v-model.number="inputs.height"></div>
@@ -18,7 +16,6 @@
       <div class="field"><label>BMI</label><div class="static-val">{{ bmi.toFixed(1) }}</div></div>
     </div>
 
-    <!-- 計算種別 -->
     <div class="section main-mode">
       <label><strong>計算するもの</strong></label><br>
       <select v-model="inputs.mode">
@@ -27,7 +24,6 @@
       </select>
     </div>
 
-    <!-- ① カルボプラチン設定 -->
     <div v-if="inputs.mode === 'carboplatin'" class="sub-pane">
       <h3>カルボプラチン（Calvert式）設定</h3>
       <div class="row">
@@ -42,7 +38,6 @@
         </select>
       </div>
 
-      <!-- ①-1 CG式詳細設定 -->
       <div v-if="inputs.gfrMethod === 'cg'" class="detail-pane">
         <div class="row">
           <label>血清Cr：</label>
@@ -51,8 +46,8 @@
         <div class="row">
           <label>血清Crの補正方法：</label>
           <select v-model="inputs.scrAdj">
-            <option value="nci">NCI-GOG/NCCN基準 (0.7足切り・125キャップ)</option>
-            <option value="ando">Ando式 (sCr+0.2・低腎機能補正あり)</option>
+            <option value="nci">NCI-GOG/NCCN基準</option>
+            <option value="ando">Ando式</option>
             <option value="none">補正しない</option>
           </select>
         </div>
@@ -70,8 +65,12 @@
           <select v-model="inputs.weightAdj">
             <option value="ibw">常に標準体重を用いる</option>
             <option value="actual">常に実体重を用いる</option>
-            <option value="bmi_based">BMI 25以上で補正体重(AdjBW)を用いる</option>
+            <option value="bmi_based">設定したBMI以上で補正体重(AdjBW)を用いる</option>
           </select>
+        </div>
+        <div class="row" v-if="inputs.weightAdj === 'bmi_based'">
+          <label style="margin-left: 20px; color: #555;">└ 補正を適用するBMI基準値：</label>
+          <input type="number" v-model.number="inputs.weightAdjBmiLimit" style="width: 70px;"> 以上
         </div>
       </div>
 
@@ -81,7 +80,6 @@
       </div>
     </div>
 
-    <!-- ② 体表面積（BSA）設定[cite: 1] -->
     <div v-if="inputs.mode === 'bsa_drug'" class="sub-pane">
       <h3>体表面積（BSA）計算設定</h3>
       <div class="row">
@@ -95,7 +93,6 @@
       </div>
     </div>
 
-    <!-- 結果表示エリア[cite: 1] -->
     <div class="result-area">
       <h2>計算結果</h2>
       <div class="res-grid">
@@ -127,6 +124,7 @@ export default {
         sex: 'female', age: 60, height: 160, weight: 60,
         mode: 'carboplatin', gfrMethod: 'cg', scr: 0.8,
         scrAdj: 'nci', ibwFormula: 'devine', weightAdj: 'bmi_based',
+        weightAdjBmiLimit: 25, // ★デフォルト値を25に設定
         realCcr: 0, auc: 5, bsaMethod: 'fujimoto', dosePerBsa: 0
       }
     }
@@ -147,10 +145,12 @@ export default {
       return isMale ? 56.2 + 1.41 * h_diff : 53.1 + 1.36 * h_diff; // miller
     },
     usedWeight() {
-      const { weight, weightAdj } = this.inputs;
+      const { weight, weightAdj, weightAdjBmiLimit } = this.inputs;
       if (weightAdj === 'ibw') return { val: this.ibw, label: 'IBW' };
-      if (weightAdj === 'bmi_based' && this.bmi > 25) {
-        return { val: this.ibw + 0.4 * (weight - this.ibw), label: 'AdjBW (BMI>25)' };
+      
+      // ★ 固定値の25から、可変の weightAdjBmiLimit に変更
+      if (weightAdj === 'bmi_based' && this.bmi > weightAdjBmiLimit) {
+        return { val: this.ibw + 0.4 * (weight - this.ibw), label: `AdjBW (BMI>${weightAdjBmiLimit})` };
       }
       return { val: weight, label: 'Actual' };
     },
@@ -192,8 +192,9 @@ BMI: ${this.bmi.toFixed(1)}
 採用体重: ${res.usedWeight.toFixed(1)}kg (${res.weightLabel})
 ${this.inputs.mode === 'carboplatin' ? `推算GFR: ${res.gfr.toFixed(1)} ml/min (定数:${res.calvertConstant})\n投与量: ${res.dose.toFixed(0)} mg` : `体表面積: ${res.bsa.toFixed(3)} m²\n投与量: ${res.dose.toFixed(0)} mg`}
 (105%参考: ${res.dose105.toFixed(0)} mg)`;
-      navigator.clipboard.writeText(summary);
-      alert("コピーしました");
+      navigator.clipboard.writeText(summary)
+        .then(() => alert("コピーしました"))
+        .catch(() => alert("クリップボードへのコピーに失敗しました。"));
     }
   }
 }

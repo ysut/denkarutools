@@ -27,24 +27,29 @@ export default {
   data() {
     return {
       patients: [],
-      newPatient: { id: '', name: '', age: '', last_visit: '2026-05-06' }
+      newPatient: { id: '', name: '', age: '', last_visit: new Date().toISOString().split('T')[0] }
     }
   },
   mounted() { this.loadData(); },
   methods: {
     loadData() {
-      fetch('http://localhost:8080/api/patients')
-        .then(res => res.json()).then(data => this.patients = data);
+      fetch('/api/patients')
+        .then(res => res.json())
+        .then(data => { this.patients = data; })
+        .catch(err => alert("患者データの読み込みに失敗しました: " + err));
     },
     savePatient() {
-      fetch('http://localhost:8080/api/patients', {
+      fetch('/api/patients', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(this.newPatient)
-      }).then(() => {
-        this.newPatient = { id: '', name: '', age: '', last_visit: '2026-05-06' };
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("ステータス " + res.status);
+        this.newPatient = { id: '', name: '', age: '', last_visit: new Date().toISOString().split('T')[0] };
         this.loadData();
-      });
+      })
+      .catch(err => alert("保存に失敗しました: " + err));
     }
   }
 }
