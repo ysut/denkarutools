@@ -47,7 +47,9 @@ func handlePreopSummary(w http.ResponseWriter, req *http.Request) {
 		safeID := filepath.Base(id)
 		filename := fmt.Sprintf("summary_%s.json", safeID)
 
+		fileMu.Lock()
 		data, err := os.ReadFile(filename)
+		fileMu.Unlock()
 		if err != nil {
 			// ファイルがない場合はVue側が「新規作成モード」に切り替えられるよう 404 を返す
 			http.Error(w, "Summary not found", http.StatusNotFound)
@@ -82,7 +84,9 @@ func handlePreopSummary(w http.ResponseWriter, req *http.Request) {
 			return
 		}
 
+		fileMu.Lock()
 		err = os.WriteFile(filename, updatedData, 0644)
+		fileMu.Unlock()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "【エラー】ファイル書き込みに失敗: %v\n", err)
 			http.Error(w, "Failed to write file to NAS", http.StatusInternalServerError)

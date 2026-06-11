@@ -6,10 +6,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **denkarutools** is a Japanese medical tools web application targeting gynecology/obstetrics. It provides:
 - **Chemocalc** (`化学療法計算`) — Carboplatin (Calvert formula) and BSA-based drug dose calculator
+- **ChemoSchedule** (`化学療法スケジュール`) — Printable chemotherapy schedule sheets; regimens defined in `regimens.toml`
+- **DrugHoldChecker** (`術前休薬チェッカー`) — Perioperative drug-hold/resume guidance from free-text drug input
 - **PatientManager** (`患者管理`) — Simple patient list with CRUD via JSON file
 - **PreopSummary** (`術前サマリー`) — Pre-operative summary form (cytology, biopsy, imaging findings) per patient
 
 ## Running the App
+- 院内電子カルテ端末で実行するアプリケーション
+- オフラインの端末で動かす
+- 各端末にはInternet Explorer 11が入っている
+- goサーバーをローカルで立ち上げてアプリケーションを使う
+- ログファイルやコンフィグは、利用者全員がアクセスできるNASに保存する
 
 **Recommended — Docker Compose (both services):**
 ```bash
@@ -18,24 +25,30 @@ docker compose up
 # Backend:  http://localhost:8080
 ```
 
-**Frontend only (local):**
-```bash
-cd frontend && npm run serve
-# Proxies /api to localhost:8080 (see vue.config.js)
-```
-
-**Backend only (local):**
-```bash
-go run ./backend
-```
-
-## Lint
+## Production Release (offline terminals)
 
 ```bash
-cd frontend && npm run lint
+sh scripts/build-release.sh          # → release/denkarutools.exe (Windows 64bit)
+sh scripts/build-release.sh linux    # → release/denkarutools-linux
+sh scripts/build-release.sh mac      # → release/denkarutools-mac
 ```
 
-There are no backend tests or frontend unit tests currently.
+- Builds run entirely in Docker (node:16-slim → golang:1.24-bookworm). The built
+  frontend is copied into `backend/static/` and embedded into the binary via
+  `go:embed`, so one binary serves both UI and API on port 8080 (`PORT` env to change).
+- Deploy: put the binary and `regimens.toml` in one folder (e.g. on the shared NAS)
+  and run it **with that folder as the working directory** — all data files
+  (`patients.json`, `summary_*.json`) are read/written relative to the CWD.
+- Open `http://localhost:8080` in the terminal's browser.
+
+### IE11 compatibility (until terminals get Edge)
+
+The frontend must stay IE11-compatible:
+- `npm run build` uses `--no-module` (Vue CLI 5 defaults to modern/ESM builds otherwise — IE gets ES6 syntax errors without this flag).
+- `browserslist` includes `ie 11`; `whatwg-fetch` is imported in `main.js`.
+- Do NOT use: CSS custom properties (`var(--…)`), CSS grid, flex `gap`,
+  `navigator.clipboard` (use `src/utils/clipboard.js`), `String.prototype.normalize`
+  without a guard. API responses send `Cache-Control: no-store` because IE caches GET XHR.
 
 ## Architecture
 

@@ -1,0 +1,23 @@
+{
+  "id": "P001",
+  "age": 58,
+  "gravida": "2",
+  "para": "2",
+  "chiefComplaint": "腹部膨満感",
+  "pastHistory": "高血圧（アムロジピン内服中）、2型糖尿病（メトホルミン内服中）",
+  "surgicalHistory": "虫垂切除術（20歳代）",
+  "cervicalCytologyDate": "2026-05-12",
+  "cervicalCytology": "NILM",
+  "cervicalBiopsyDate": "",
+  "cervicalBiopsy": "",
+  "endometrialCytologyDate": "2026-05-12",
+  "endometrialCytology": "陰性",
+  "endometrialBiopsyDate": "",
+  "endometrialBiopsy": "",
+  "ctDate": "2026-05-15",
+  "ctFindings": "両側付属器に多房性嚢胞性腫瘤。大網に播種結節あり。傍大動脈リンパ節腫大なし。胸水なし、少量腹水あり。",
+  "mriDate": "2026-05-20",
+  "mriFindings": "右付属器に12cm大の多房性嚢胞性腫瘤、充実部分にDWI高信号。左付属器にも5cm大の同様の腫瘤。",
+  "petDate": "2026-05-26",
+  "petFindings": "両側付属器腫瘤にFDG集積（SUVmax 8.2）。大網播種に集積あり。遠隔転移を示唆する集積なし。"
+}

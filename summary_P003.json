@@ -1,0 +1,23 @@
+{
+  "id": "P003",
+  "age": 47,
+  "gravida": "1",
+  "para": "1",
+  "chiefComplaint": "接触出血",
+  "pastHistory": "特記事項なし",
+  "surgicalHistory": "帝王切開術（30歳）",
+  "cervicalCytologyDate": "2026-04-20",
+  "cervicalCytology": "SCC",
+  "cervicalBiopsyDate": "2026-04-27",
+  "cervicalBiopsy": "Squamous cell carcinoma, keratinizing type",
+  "endometrialCytologyDate": "",
+  "endometrialCytology": "",
+  "endometrialBiopsyDate": "",
+  "endometrialBiopsy": "",
+  "ctDate": "2026-05-08",
+  "ctFindings": "骨盤リンパ節腫大なし。水腎症なし。遠隔転移なし。",
+  "mriDate": "2026-05-11",
+  "mriFindings": "子宮頸部に4.5cm大の腫瘤。左傍組織浸潤を疑う所見あり。膀胱・直腸浸潤なし。",
+  "petDate": "2026-05-15",
+  "petFindings": "子宮頸部腫瘤にFDG集積（SUVmax 12.4）。リンパ節・遠隔転移を示唆する集積なし。"
+}

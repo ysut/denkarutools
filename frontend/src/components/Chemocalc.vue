@@ -117,7 +117,10 @@
 </template>
 
 <script>
+import { copyText } from '../utils/clipboard.js';
+
 export default {
+  name: 'ChemoCalc',
   data() {
     return {
       inputs: {
@@ -192,7 +195,7 @@ BMI: ${this.bmi.toFixed(1)}
 採用体重: ${res.usedWeight.toFixed(1)}kg (${res.weightLabel})
 ${this.inputs.mode === 'carboplatin' ? `推算GFR: ${res.gfr.toFixed(1)} ml/min (定数:${res.calvertConstant})\n投与量: ${res.dose.toFixed(0)} mg` : `体表面積: ${res.bsa.toFixed(3)} m²\n投与量: ${res.dose.toFixed(0)} mg`}
 (105%参考: ${res.dose105.toFixed(0)} mg)`;
-      navigator.clipboard.writeText(summary)
+      copyText(summary)
         .then(() => alert("コピーしました"))
         .catch(() => alert("クリップボードへのコピーに失敗しました。"));
     }
@@ -205,12 +208,13 @@ ${this.inputs.mode === 'carboplatin' ? `推算GFR: ${res.gfr.toFixed(1)} ml/min 
 .section { margin-bottom: 20px; padding: 15px; background: #f0f2f5; border-radius: 8px; }
 .sub-pane { border: 2px solid #e8e8e8; padding: 20px; margin-top: 15px; border-radius: 8px; }
 .detail-pane { background: #fffbe6; padding: 15px; margin-top: 15px; border-left: 5px solid #ffe58f; }
-.input-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 20px 0; }
-.field { display: flex; flex-direction: column; font-size: 0.85em; }
+/* flex (not grid) for IE11 compatibility */
+.input-grid { display: flex; flex-wrap: wrap; margin: 15px -5px; }
+.field { display: flex; flex-direction: column; font-size: 0.85em; width: calc(25% - 10px); min-width: 110px; margin: 5px; box-sizing: border-box; }
 .static-val { padding: 8px; background: #eee; border-radius: 4px; font-weight: bold; margin-top: 5px; }
 .result-area { margin-top: 40px; padding: 20px; background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 12px; }
 .highlight { color: #cf1322; font-size: 1.8em; font-weight: bold; }
 .muted-text { font-size: 0.8em; color: #666; margin-left: 8px; }
-.copy-btn { margin-top: 20px; width: 100%; padding: 12px; background: #1890ff; color: white; border: none; border-radius: 6px; cursor: pointer; }
+.copy-btn { margin-top: 20px; width: 100%; padding: 12px; background: #00715d; color: white; border: none; border-radius: 6px; cursor: pointer; }
 input, select { padding: 5px; border: 1px solid #d9d9d9; border-radius: 4px; }
 </style>

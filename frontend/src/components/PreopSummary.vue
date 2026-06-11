@@ -104,6 +104,8 @@
 </template>
 
 <script>
+import { copyText } from '../utils/clipboard.js';
+
 export default {
   data() {
     return {
@@ -194,7 +196,7 @@ ${f.surgicalHistory || '-'}
 ・FDG-PET/CT [${f.petDate || '-'}]:
   ${f.petFindings || '-'}
 `;
-      navigator.clipboard.writeText(text)
+      copyText(text)
         .then(() => alert("クリップボードにコピーしました！"))
         .catch(() => alert("クリップボードへのコピーに失敗しました。"));
     },
@@ -222,23 +224,29 @@ ${f.surgicalHistory || '-'}
 .section { margin-bottom: 20px; padding: 15px; background: #f0f2f5; border-radius: 8px; }
 .search-box { background: #e6f7ff; border: 1px solid #91d5ff; }
 .status-text { margin-left: 15px; font-size: 0.9em; color: #1890ff; font-weight: bold; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+/* flex (not grid) for IE11 compatibility; full-width items take 100% */
+.form-grid { display: flex; flex-wrap: wrap; margin: 0 -8px 25px; }
+.form-grid > div { box-sizing: border-box; margin: 8px; width: calc(50% - 16px); }
 .form-group { display: flex; flex-direction: column; }
 .form-group-medical { display: flex; flex-direction: column; background: #fdfdfd; border: 1px solid #e8e8e8; padding: 8px; border-radius: 4px; }
-.full-width-medical { grid-column: span 2; display: flex; flex-direction: column; background: #fdfdfd; border: 1px solid #e8e8e8; padding: 8px; border-radius: 4px; }
-.full-width { grid-column: span 2; }
+.full-width-medical { width: calc(100% - 16px) !important; display: flex; flex-direction: column; background: #fdfdfd; border: 1px solid #e8e8e8; padding: 8px; border-radius: 4px; }
+.full-width { width: calc(100% - 16px) !important; }
 .section-title { font-size: 1.1em; font-weight: bold; border-bottom: 2px solid #35495e; padding-bottom: 5px; margin-top: 15px; color: #35495e; }
-.gp-inputs { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
-.med-row { display: flex; gap: 10px; margin-top: 5px; align-items: flex-start; }
+.gp-inputs { display: flex; align-items: center; margin-top: 5px; }
+.gp-inputs input { margin-right: 5px; margin-left: 3px; }
+.med-row { display: flex; margin-top: 5px; align-items: flex-start; }
+.med-row > .date-input { margin-right: 10px; }
 .date-input { width: 130px; padding: 6px; border: 1px solid #d9d9d9; border-radius: 4px; }
 .result-input { flex-grow: 1; padding: 6px; border: 1px solid #d9d9d9; border-radius: 4px; }
 .result-input-text { flex-grow: 1; padding: 6px; border: 1px solid #d9d9d9; border-radius: 4px; font-family: sans-serif; }
 label { font-weight: bold; font-size: 0.9em; color: #444; }
 input, textarea { padding: 8px; border: 1px solid #d9d9d9; border-radius: 4px; margin-top: 5px; }
-.actions { display: flex; gap: 15px; }
+.actions { display: flex; }
+.actions button { margin-right: 15px; }
+.actions button:last-child { margin-right: 0; }
 button { padding: 12px 20px; border: none; border-radius: 6px; font-size: 1em; font-weight: bold; cursor: pointer; }
-.btn-primary { background: #1890ff; color: white; }
-.btn-secondary { background: #595959; color: white; padding: 8px 15px; font-size: 0.9em; }
+.btn-primary { background: #00715d; color: white; }
+.btn-secondary { background: #00493c; color: white; padding: 8px 15px; font-size: 0.9em; }
 .btn-success { background: #52c41a; color: white; flex-grow: 1; }
 button:hover { opacity: 0.85; }
 </style>

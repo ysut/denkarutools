@@ -38,6 +38,11 @@ dist/
 *.exe
 .DS_Store
 
+# Release artifacts (frontend embedded into the Go binary)
+backend/static/*
+!backend/static/placeholder.html
+release/
+
 # Python
 __pycache__/
 *.pyc

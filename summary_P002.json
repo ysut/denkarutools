@@ -1,0 +1,23 @@
+{
+  "id": "P002",
+  "age": 64,
+  "gravida": "3",
+  "para": "2",
+  "chiefComplaint": "不正性器出血",
+  "pastHistory": "脂質異常症（ロスバスタチン内服中）",
+  "surgicalHistory": "なし",
+  "cervicalCytologyDate": "2026-05-18",
+  "cervicalCytology": "NILM",
+  "cervicalBiopsyDate": "",
+  "cervicalBiopsy": "",
+  "endometrialCytologyDate": "2026-05-18",
+  "endometrialCytology": "悪性疑い",
+  "endometrialBiopsyDate": "2026-05-25",
+  "endometrialBiopsy": "Endometrioid carcinoma, G1",
+  "ctDate": "2026-06-01",
+  "ctFindings": "リンパ節腫大なし。遠隔転移なし。",
+  "mriDate": "2026-06-03",
+  "mriFindings": "子宮内膜の不整な肥厚あり。筋層浸潤は1/2未満と判断。頸部間質浸潤なし。",
+  "petDate": "",
+  "petFindings": ""
+}
