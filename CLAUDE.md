@@ -25,6 +25,11 @@ docker compose up
 # Backend:  http://localhost:8080
 ```
 
+Dev loop: edits to `frontend/src` hot-reload via the Vue dev server; edits to
+`backend/*.go` auto-rebuild via air (`.air.toml`, installed on first container
+start into the `go-cache` volume); `regimens.toml` needs no restart at all
+(re-read per request). Manual `go build` is only for releases.
+
 ## Production Release (offline terminals)
 
 ```bash
@@ -33,7 +38,7 @@ sh scripts/build-release.sh linux    # → release/denkarutools-linux
 sh scripts/build-release.sh mac      # → release/denkarutools-mac
 ```
 
-- Builds run entirely in Docker (node:16-slim → golang:1.24-bookworm). The built
+- Builds run entirely in Docker (node:16-slim → golang:1.26-bookworm). The built
   frontend is copied into `backend/static/` and embedded into the binary via
   `go:embed`, so one binary serves both UI and API on port 8080 (`PORT` env to change).
 - Deploy: put the binary and `regimens.toml` in one folder (e.g. on the shared NAS)
@@ -49,6 +54,8 @@ The frontend must stay IE11-compatible:
 - Do NOT use: CSS custom properties (`var(--…)`), CSS grid, flex `gap`,
   `navigator.clipboard` (use `src/utils/clipboard.js`), `String.prototype.normalize`
   without a guard. API responses send `Cache-Control: no-store` because IE caches GET XHR.
+- Once all terminals are replaced with Edge (planned within 2026), migrate to
+  Vue 3 + Vite following `docs/VUE3_MIGRATION.md`.
 
 ## Architecture
 
@@ -67,7 +74,7 @@ The frontend must stay IE11-compatible:
 
 ### Docker Compose
 - `frontend` container: Node 16, mounts `./frontend`, serves on host port **8081** → container 8080.
-- `backend` container: Go 1.24, mounts repo root `.` as `/app`, serves on host port **8080**.
+- `backend` container: Go 1.26 (with air hot reload), mounts repo root `.` as `/app`, serves on host port **8080**.
 - Backend reads/writes JSON files relative to `/app` (the repo root), so `patients.json` and `summary_*.json` are committed/present at the repo root.
 
 ## Key Conventions

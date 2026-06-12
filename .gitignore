@@ -43,6 +43,9 @@ backend/static/*
 !backend/static/placeholder.html
 release/
 
+# air (dev hot reload) build output
+tmp/
+
 # Python
 __pycache__/
 *.pyc

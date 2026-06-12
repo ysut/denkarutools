@@ -13,14 +13,18 @@ services:
     entrypoint: ["sh", "/scripts/frontend-entrypoint.sh"]
 
   backend:
-    image: golang:1.24-bookworm
+    image: golang:1.26-bookworm
     container_name: denkarutools-backend
     volumes:
       - .:/app
       - ./scripts:/scripts:ro
+      - go-cache:/go
     working_dir: /app
     ports:
       - "8080:8080"
     tty: true
     stdin_open: true
-    entrypoint: ["sh", "/scripts/backend-entrypoint.sh"]
+    entrypoint: ["bash", "/scripts/backend-entrypoint.sh"]
+
+volumes:
+  go-cache:

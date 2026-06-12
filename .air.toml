@@ -1,0 +1,15 @@
+# Hot-reload config for the dev backend container (scripts/backend-entrypoint.sh).
+# Rebuilds and restarts the server whenever a .go file under backend/ changes.
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "go build -o ./tmp/denkarutools-dev ./backend"
+entrypoint = "./tmp/denkarutools-dev"
+include_dir = ["backend"]
+include_ext = ["go"]
+exclude_dir = ["frontend", "scripts", "docs", "release", "tmp"]
+delay = 300
+
+[log]
+main_only = true

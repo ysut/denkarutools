@@ -36,12 +36,12 @@ echo "==> [2/3] Embedding frontend into backend/static"
 find backend/static -mindepth 1 ! -name placeholder.html -delete
 cp -R frontend/dist/. backend/static/
 
-echo "==> [3/3] Compiling Go binary for $TARGET (golang:1.24-bookworm)"
+echo "==> [3/3] Compiling Go binary for $TARGET (golang:1.26-bookworm)"
 mkdir -p release
 docker run --rm \
   -v "$PWD":/app -w /app \
   -e GOOS="$GOOS" -e GOARCH="$GOARCH" -e CGO_ENABLED=0 \
-  golang:1.24-bookworm \
+  golang:1.26-bookworm \
   go build -trimpath -ldflags "-s -w" -o "release/$OUT" ./backend
 
 cp regimens.toml release/

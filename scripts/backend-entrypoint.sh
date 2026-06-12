@@ -1,32 +1,22 @@
 #!/bin/bash
 set -e
 
-mkdir -p backend
-
-if [ ! -f "backend/main.go" ]; then
-  echo "Creating default main.go..."
-  cat <<EOF > backend/main.go
-package main
-import (
-	"fmt"
-	"net/http"
-)
-func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		fmt.Fprint(w, \`{"status":"ok", "version":"1.24"}\`)
-	})
-	fmt.Println("Backend starting on :8080")
-	http.ListenAndServe(":8080", mux)
-}
-EOF
-fi
-
-if [ ! -f "go.mod" ]; then
-  go mod init denkarutools
-fi
-
 go mod tidy
-echo "Starting Go backend..."
+
+# Hot reload: rebuild & restart automatically when backend/*.go changes.
+# air is cached in the go-cache volume; reinstalled only when the pinned
+# version below changes.
+AIR_VERSION=v1.65.3
+
+if ! command -v air > /dev/null 2>&1 || ! air -v 2> /dev/null | grep -q "$AIR_VERSION"; then
+  echo "Installing air $AIR_VERSION (hot reload)..."
+  go install "github.com/air-verse/air@$AIR_VERSION" || true
+fi
+
+if command -v air > /dev/null 2>&1; then
+  echo "Starting Go backend with hot reload (air)..."
+  exec air -c .air.toml
+fi
+
+echo "air unavailable — starting Go backend without hot reload..."
 exec go run ./backend
