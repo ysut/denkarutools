@@ -56,7 +56,7 @@ var DEFAULT_REF = {
 };
 
 // Lines that are always boilerplate noise.
-function isNoiseLine(name, rest) {
+function isNoiseLine(name) {
   if (name === '') return true;
   if (/^依頼元/.test(name)) return true;
   if (/ｺﾒﾝﾄ/.test(name)) return true;
@@ -70,6 +70,7 @@ export function parseLabReport(text) {
   var lines = String(text).replace(/\r/g, '').split('\n');
   var out = [];
   var pendingName = null; // for 項目 / 結果 pairs in urine sediment
+  var currentSection = ''; // section each item belongs to (for set grouping)
 
   for (var i = 0; i < lines.length; i++) {
     var raw = lines[i];
@@ -81,6 +82,7 @@ export function parseLabReport(text) {
     // section header: "[血算]"
     var sec = body.match(/^\[(.+?)\]$/);
     if (sec) {
+      currentSection = sec[1];
       out.push({ type: 'section', name: sec[1] });
       pendingName = null;
       continue;
@@ -96,7 +98,7 @@ export function parseLabReport(text) {
     // strip a trailing "外注" marker that can ride along the value column
     value = value.replace(/\s*外注\s*$/, '').replace(/\s+$/, '');
 
-    if (isNoiseLine(name, body)) continue;
+    if (isNoiseLine(name)) continue;
 
     // 項目 / 結果 pair → fold into a single named item
     if (name === '項目') { pendingName = value; continue; }
@@ -119,8 +121,48 @@ export function parseLabReport(text) {
       value: value,
       flag: flag,
       ref: ref,
-      unit: unit
+      unit: unit,
+      section: currentSection
     });
+  }
+  return out;
+}
+
+// Filter a parsed report down to a named set of items.
+// - itemNames empty/missing → return parsed unchanged (= show everything)
+// - items are emitted in itemNames order, grouped under their original section
+//   header (section order = first appearance among the picked items); empty
+//   sections are dropped, non-empty ones keep their 【…】 header.
+export function applyLabSet(parsed, itemNames) {
+  if (!itemNames || itemNames.length === 0) return parsed;
+
+  var byName = {};
+  for (var i = 0; i < parsed.length; i++) {
+    var e = parsed[i];
+    if (e.type === 'item' && !Object.prototype.hasOwnProperty.call(byName, e.name)) {
+      byName[e.name] = e;
+    }
+  }
+
+  var groups = {};
+  var order = [];
+  for (var k = 0; k < itemNames.length; k++) {
+    var item = byName[itemNames[k]];
+    if (!item) continue;
+    var sec = item.section || '';
+    if (!Object.prototype.hasOwnProperty.call(groups, sec)) {
+      groups[sec] = [];
+      order.push(sec);
+    }
+    groups[sec].push(item);
+  }
+
+  var out = [];
+  for (var o = 0; o < order.length; o++) {
+    var s = order[o];
+    if (s !== '') out.push({ type: 'section', name: s });
+    var arr = groups[s];
+    for (var a = 0; a < arr.length; a++) out.push(arr[a]);
   }
   return out;
 }
@@ -166,17 +208,6 @@ function refFor(item) {
   if (r && (r.lln != null || r.uln != null)) return r;
   if (Object.prototype.hasOwnProperty.call(DEFAULT_REF, item.name)) return DEFAULT_REF[item.name];
   return null;
-}
-
-// ratio-based high grade: thresholds are multiples of ULN, ascending
-function gradeHighRatio(value, uln, label, mults) {
-  if (uln == null) return '';
-  var ratio = value / uln;
-  if (ratio <= mults[0]) return ''; // within / at ULN bound handled by caller
-  for (var g = mults.length - 1; g >= 0; g--) {
-    if (ratio > mults[g]) return label + ' Grade ' + (g + 1);
-  }
-  return '';
 }
 
 // CTCAE v5.0 grade for a single item. Returns '' when not gradeable / normal.
@@ -323,56 +354,126 @@ export function gradeLevel(gradeStr) {
   return m ? parseInt(m[1], 10) : 0;
 }
 
-// Build the formatted, column-aligned report text.
-export function formatReport(parsed) {
-  // index items by name for cross-references (e.g. corrected Ca)
+// Normalize a parsed report into display rows shared by both formatters.
+// Each row is either { section } or { name, value, unit, flag, grade } with the
+// unit resolved and the CTCAE grade computed once.
+function buildRows(parsed) {
   var byName = {};
-  for (var i = 0; i < parsed.length; i++) {
+  var i;
+  for (i = 0; i < parsed.length; i++) {
     if (parsed[i].type === 'item') byName[parsed[i].name] = parsed[i];
   }
-
-  // compute display rows first
   var rows = [];
-  var nameW = 0, valW = 0, unitFlagW = 0;
-  for (var j = 0; j < parsed.length; j++) {
-    var e = parsed[j];
+  for (i = 0; i < parsed.length; i++) {
+    var e = parsed[i];
     if (e.type === 'section') { rows.push({ section: e.name }); continue; }
-    var unit = resolveUnit(e);
-    var grade = gradeItem(e, byName);
-    var unitFlag = unit;
-    if (e.flag) unitFlag = (unit ? unit + ' ' : '') + '(' + e.flag + ')';
-    rows.push({ name: e.name, value: e.value, unitFlag: unitFlag, grade: grade });
-    if (e.name.length > nameW) nameW = e.name.length;
-    if (e.value.length > valW) valW = e.value.length;
-    if (unitFlag.length > unitFlagW) unitFlagW = unitFlag.length;
+    rows.push({
+      name: e.name,
+      value: e.value,
+      unit: resolveUnit(e),
+      flag: e.flag,
+      grade: gradeItem(e, byName)
+    });
   }
+  return rows;
+}
 
+// Build the formatted report text (delimiter style).
+//
+// Output is paste-target font-independent: results go into NEC MegaOak karte
+// notes rendered in MS P明朝, a PROPORTIONAL font, so space-padded columns can
+// never line up. Instead each item is one line "name: value unit (flag) grade"
+// with single-space separators — this reads correctly in any font.
+export function formatReport(parsed) {
   var lines = [];
-  for (var k = 0; k < rows.length; k++) {
-    var r = rows[k];
-    if (r.section != null) {
-      lines.push('【' + r.section + '】');
-      continue;
-    }
-    var line = padEnd(r.name, nameW) + '  ' + padStart(r.value, valW) + '  ' + r.unitFlag;
-    if (r.grade) line = padEnd(line, nameW + 2 + valW + 2 + unitFlagW) + '  ' + r.grade;
-    lines.push(line.replace(/\s+$/, ''));
+  var rows = buildRows(parsed);
+  for (var i = 0; i < rows.length; i++) {
+    var r = rows[i];
+    if (r.section != null) { lines.push('【' + r.section + '】'); continue; }
+    var line = r.name + ': ' + r.value;
+    if (r.unit) line += ' ' + r.unit;
+    if (r.flag) line += ' (' + r.flag + ')';
+    if (r.grade) line += '  ' + r.grade;
+    lines.push(line);
   }
   return lines.join('\n');
 }
 
-function padEnd(s, w) {
-  s = String(s);
-  while (s.length < w) s += ' ';
-  return s;
+// ---- display-width-aware alignment (for monospace MS明朝 paste target) ----
+//
+// In a monospace CJK font (MS明朝) a full-width char occupies 2 cells and a
+// half-width char 1 cell, so columns can be aligned by counting display width
+// instead of code units. East Asian Ambiguous characters (μ, Ⅲ, Greek …) are
+// rendered full-width by MS明朝, so they count as 2 here too.
+function charWidth(cp) {
+  if (cp >= 0xFF61 && cp <= 0xFFDC) return 1; // half-width katakana
+  if (cp >= 0xFFE8 && cp <= 0xFFEE) return 1; // half-width symbols
+  if (cp < 0x80) return 1;                    // ASCII
+  if (
+    (cp >= 0x1100 && cp <= 0x115F) || // Hangul Jamo
+    (cp >= 0x2E80 && cp <= 0xA4CF) || // CJK radicals .. Yi (kanji/kana)
+    (cp >= 0xAC00 && cp <= 0xD7A3) || // Hangul syllables
+    (cp >= 0xF900 && cp <= 0xFAFF) || // CJK compat ideographs
+    (cp >= 0xFE30 && cp <= 0xFE4F) || // CJK compat forms
+    (cp >= 0xFF00 && cp <= 0xFF60) || // full-width ASCII variants (Ｂ（＋）)
+    (cp >= 0xFFE0 && cp <= 0xFFE6)    // full-width signs
+  ) return 2;
+  if (
+    cp === 0x00B5 ||                  // µ micro sign
+    (cp >= 0x0370 && cp <= 0x03FF) || // Greek (incl. μ U+03BC)
+    (cp >= 0x0400 && cp <= 0x04FF) || // Cyrillic
+    (cp >= 0x2160 && cp <= 0x217F) || // Roman numerals (Ⅲ)
+    (cp >= 0x2460 && cp <= 0x24FF) || // enclosed alphanumerics
+    (cp >= 0x25A0 && cp <= 0x25FF) || // geometric shapes
+    (cp >= 0x2600 && cp <= 0x26FF)    // misc symbols
+  ) return 2;
+  return 1;
 }
-function padStart(s, w) {
+
+function displayWidth(s) {
   s = String(s);
-  while (s.length < w) s = ' ' + s;
+  var w = 0;
+  for (var i = 0; i < s.length; i++) w += charWidth(s.charCodeAt(i));
+  return w;
+}
+
+function padEndW(s, w) {
+  s = String(s);
+  var d = displayWidth(s);
+  while (d < w) { s += ' '; d++; }
   return s;
 }
 
-// Convenience: text in → formatted text out.
-export function cleanLabText(text) {
-  return formatReport(parseLabReport(text));
+function padStartW(s, w) {
+  s = String(s);
+  var d = displayWidth(s);
+  while (d < w) { s = ' ' + s; d++; }
+  return s;
+}
+
+// Column-aligned table. Only lines up correctly in a monospace font (MS明朝).
+export function formatReportAligned(parsed) {
+  var rows = buildRows(parsed);
+
+  // combine unit + flag into one column and measure the column widths
+  var nameW = 0, valW = 0, unitFlagW = 0;
+  var i, r;
+  for (i = 0; i < rows.length; i++) {
+    r = rows[i];
+    if (r.section != null) continue;
+    r.unitFlag = r.flag ? (r.unit ? r.unit + ' ' : '') + '(' + r.flag + ')' : r.unit;
+    nameW = Math.max(nameW, displayWidth(r.name));
+    valW = Math.max(valW, displayWidth(r.value));
+    unitFlagW = Math.max(unitFlagW, displayWidth(r.unitFlag));
+  }
+
+  var lines = [];
+  for (i = 0; i < rows.length; i++) {
+    r = rows[i];
+    if (r.section != null) { lines.push('【' + r.section + '】'); continue; }
+    var line = padEndW(r.name, nameW) + '  ' + padStartW(r.value, valW) + '  ' + r.unitFlag;
+    if (r.grade) line = padEndW(line, nameW + 2 + valW + 2 + unitFlagW) + '  ' + r.grade;
+    lines.push(line.replace(/\s+$/, ''));
+  }
+  return lines.join('\n');
 }

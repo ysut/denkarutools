@@ -106,21 +106,27 @@
 <script>
 import { copyText } from '../utils/clipboard.js';
 
+// A blank preop summary form. Defined once and reused for the initial state,
+// "clear", and merge-on-load so the field list never drifts out of sync.
+function emptyForm() {
+  return {
+    id: '', age: '', gravida: '', para: '', chiefComplaint: '', pastHistory: '', surgicalHistory: '',
+    cervicalCytologyDate: '', cervicalCytology: '',
+    cervicalBiopsyDate: '', cervicalBiopsy: '',
+    endometrialCytologyDate: '', endometrialCytology: '',
+    endometrialBiopsyDate: '', endometrialBiopsy: '',
+    ctDate: '', ctFindings: '',
+    mriDate: '', mriFindings: '',
+    petDate: '', petFindings: ''
+  };
+}
+
 export default {
   data() {
     return {
       searchId: '',
       loadStatus: '',
-      form: {
-        id: '', age: '', gravida: '', para: '', chiefComplaint: '', pastHistory: '', surgicalHistory: '',
-        cervicalCytologyDate: '', cervicalCytology: '',
-        cervicalBiopsyDate: '', cervicalBiopsy: '',
-        endometrialCytologyDate: '', endometrialCytology: '',
-        endometrialBiopsyDate: '', endometrialBiopsy: '',
-        ctDate: '', ctFindings: '',
-        mriDate: '', mriFindings: '',
-        petDate: '', petFindings: ''
-      }
+      form: emptyForm()
     }
   },
   methods: {
@@ -137,7 +143,7 @@ export default {
         })
         .then(data => {
           // 既存データに新しい項目がない場合でもバインドが崩れないようにマージ
-          this.form = Object.assign({}, this.defaultForm(), data);
+          this.form = Object.assign(emptyForm(), data);
           this.loadStatus = '読み込み成功';
         })
         .catch(() => {
@@ -200,20 +206,8 @@ ${f.surgicalHistory || '-'}
         .then(() => alert("クリップボードにコピーしました！"))
         .catch(() => alert("クリップボードへのコピーに失敗しました。"));
     },
-    defaultForm() {
-      return {
-        id: '', age: '', gravida: '', para: '', chiefComplaint: '', pastHistory: '', surgicalHistory: '',
-        cervicalCytologyDate: '', cervicalCytology: '',
-        cervicalBiopsyDate: '', cervicalBiopsy: '',
-        endometrialCytologyDate: '', endometrialCytology: '',
-        endometrialBiopsyDate: '', endometrialBiopsy: '',
-        ctDate: '', ctFindings: '',
-        mriDate: '', mriFindings: '',
-        petDate: '', petFindings: ''
-      };
-    },
     clearForm() {
-      this.form = this.defaultForm();
+      this.form = emptyForm();
     }
   }
 }

@@ -50,7 +50,7 @@ daily = true
 }
 
 func TestParseTOMLRegimensFile(t *testing.T) {
-	data, err := os.ReadFile("../regimens.toml")
+	data, err := os.ReadFile("../data/regimens.toml")
 	if err != nil {
 		t.Skipf("regimens.toml not found: %v", err)
 	}

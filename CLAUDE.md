@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Chemocalc** (`化学療法計算`) — Carboplatin (Calvert formula) and BSA-based drug dose calculator
 - **ChemoSchedule** (`化学療法スケジュール`) — Printable chemotherapy schedule sheets; regimens defined in `regimens.toml`
 - **DrugHoldChecker** (`術前休薬チェッカー`) — Perioperative drug-hold/resume guidance from free-text drug input
+- **LabFormatter** (`検査結果整形ツール`) — Cleans pasted EMR lab results, adds units, appends CTCAE v5.0 grades (frontend-only; logic in `src/data/labFormat.js`)
 - **PatientManager** (`患者管理`) — Simple patient list with CRUD via JSON file
 - **PreopSummary** (`術前サマリー`) — Pre-operative summary form (cytology, biopsy, imaging findings) per patient
 
@@ -41,9 +42,12 @@ sh scripts/build-release.sh mac      # → release/denkarutools-mac
 - Builds run entirely in Docker (node:16-slim → golang:1.26-bookworm). The built
   frontend is copied into `backend/static/` and embedded into the binary via
   `go:embed`, so one binary serves both UI and API on port 8080 (`PORT` env to change).
-- Deploy: put the binary and `regimens.toml` in one folder (e.g. on the shared NAS)
-  and run it **with that folder as the working directory** — all data files
-  (`patients.json`, `summary_*.json`) are read/written relative to the CWD.
+- Deploy: put the binary and the `data/` folder (shipped with `regimens.toml` +
+  `lab_sets.json` seeds) in one place and run it **with that folder as the working
+  directory**. All data files live under `data/` (see Data files below). Point
+  `DENKARU_DATA_DIR` at a shared NAS path to share data across terminals.
+- On updates, replace only the binary and keep the existing `data/` (preserves
+  patient data and saved sets).
 - Open `http://localhost:8080` in the terminal's browser.
 
 ### IE11 compatibility (until terminals get Edge)
@@ -66,16 +70,25 @@ The frontend must stay IE11-compatible:
 
 ### Backend — Go stdlib HTTP (`backend/`)
 - No external dependencies (`go.mod` has none). Pure `net/http`.
-- `main.go` — registers routes and the `Patient` CRUD handler.
+- `main.go` — registers routes and the `Patient` CRUD handler. `dataDir` (env
+  `DENKARU_DATA_DIR`, default `data`) + `dataPath()` resolve every data file;
+  `os.MkdirAll(dataDir)` runs on startup.
 - `preop.go` — `PreopSummary` handler with GET `?id=<ID>` and POST.
-- All data persisted as flat JSON files in the working directory:
-  - `patients.json` — array of all patients
-  - `summary_<ID>.json` — one file per patient preop summary (path-traversal–safe via `filepath.Base`)
+- `labsets.go` — `/api/lab-sets` handler: GET returns the lab item sets array, POST replaces the whole array (used by LabFormatter to keep only chosen items).
+
+### Data files
+All runtime data lives in **one directory** (`data/`, or `$DENKARU_DATA_DIR`).
+Every backend file read/write goes through `dataPath()`.
+- `data/regimens.toml` — chemotherapy regimens (human-edited; **tracked** as initial config)
+- `data/lab_sets.json` — named lab item sets for LabFormatter, `[{name, items[]}]` (**tracked** seed; overwritten at runtime via POST)
+- `data/patients.json` — patient list (**gitignored** — patient data)
+- `data/summary_<ID>.json` — per-patient preop summary (**gitignored**; path-traversal–safe via `filepath.Base`)
+- `seed/` — committed sample patient data for local dev (copy into `data/` to populate a fresh checkout).
 
 ### Docker Compose
 - `frontend` container: Node 16, mounts `./frontend`, serves on host port **8081** → container 8080.
 - `backend` container: Go 1.26 (with air hot reload), mounts repo root `.` as `/app`, serves on host port **8080**.
-- Backend reads/writes JSON files relative to `/app` (the repo root), so `patients.json` and `summary_*.json` are committed/present at the repo root.
+- Backend reads/writes under `/app/data` (the default `dataDir` relative to the working directory `/app`).
 
 ## Key Conventions
 

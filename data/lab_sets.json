@@ -1,0 +1,39 @@
+[
+  {
+    "name": "化学療法前ルーチン",
+    "items": [
+      "WBC",
+      "Neut/μL",
+      "HGB",
+      "PLT",
+      "AST",
+      "ALT",
+      "T-BIL",
+      "CRE",
+      "eGFR",
+      "Na",
+      "K",
+      "CRP"
+    ]
+  },
+  {
+    "name": "肝腎機能",
+    "items": [
+      "AST",
+      "ALT",
+      "γGT",
+      "ALP_IF",
+      "T-BIL",
+      "BUN",
+      "CRE",
+      "eGFR"
+    ]
+  },
+  {
+    "name": "腫瘍マーカー",
+    "items": [
+      "CA125",
+      "CA19-9"
+    ]
+  }
+]

@@ -45,7 +45,7 @@ func handlePreopSummary(w http.ResponseWriter, req *http.Request) {
 
 		// 安全対策: id に「../」などが含まれていてもファイル名部分だけを抽出する
 		safeID := filepath.Base(id)
-		filename := fmt.Sprintf("summary_%s.json", safeID)
+		filename := dataPath(fmt.Sprintf("summary_%s.json", safeID))
 
 		fileMu.Lock()
 		data, err := os.ReadFile(filename)
@@ -76,7 +76,7 @@ func handlePreopSummary(w http.ResponseWriter, req *http.Request) {
 
 		// 安全対策: IDのパストラバーサル防御
 		safeID := filepath.Base(summary.ID)
-		filename := fmt.Sprintf("summary_%s.json", safeID)
+		filename := dataPath(fmt.Sprintf("summary_%s.json", safeID))
 
 		updatedData, err := json.MarshalIndent(summary, "", "  ")
 		if err != nil {

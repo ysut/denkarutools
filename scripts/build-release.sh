@@ -44,10 +44,14 @@ docker run --rm \
   golang:1.26-bookworm \
   go build -trimpath -ldflags "-s -w" -o "release/$OUT" ./backend
 
-cp regimens.toml release/
+# Ship the initial config (regimens / lab sets) as a data/ seed next to the binary.
+# Patient data is NOT shipped — it is created in data/ on first save.
+mkdir -p release/data
+cp data/regimens.toml data/lab_sets.json release/data/
 
 echo ""
 echo "✅ Done: release/$OUT"
-echo "   配布物: release/$OUT と release/regimens.toml を同じフォルダに置いて実行し、"
+echo "   配布物: release/$OUT と release/data/ を同じフォルダに置いて実行し、"
 echo "   ブラウザで http://localhost:8080 を開いてください。"
-echo "   （patients.json などのデータファイルは実行フォルダに自動作成されます）"
+echo "   ・データは実行フォルダの data/ に読み書きされます（環境変数 DENKARU_DATA_DIR で変更可、例: NASパス）。"
+echo "   ・更新時は exe だけ差し替え、既存の data/ はそのまま残してください（患者データ・セットを保持）。"

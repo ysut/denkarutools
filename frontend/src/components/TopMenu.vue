@@ -18,6 +18,11 @@
         <h2>術前休薬チェッカー</h2>
         <p>内服薬の手術前後の休薬・再開の目安</p>
       </div>
+      <div class="menu-card" @click="$emit('changeView', 'LabFormatter')">
+        <div class="icon">🧾</div>
+        <h2>検査結果 整形ツール</h2>
+        <p>検査結果の整形・単位付与・CTCAE Grade</p>
+      </div>
       <div class="menu-card" @click="$emit('changeView', 'PatientManager')">
         <div class="icon">📋</div>
         <h2>患者管理</h2>

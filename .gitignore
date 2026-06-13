@@ -46,6 +46,11 @@ release/
 # air (dev hot reload) build output
 tmp/
 
+# Runtime patient data — never commit real patient data.
+# Config (data/regimens.toml, data/lab_sets.json) IS tracked as initial values.
+data/patients.json
+data/summary_*.json
+
 # Python
 __pycache__/
 *.pyc
@@ -54,3 +59,5 @@ __pycache__/
 *.pyw
 *.pyz
 
+# Sample data
+sample_data/

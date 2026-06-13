@@ -15,7 +15,7 @@ func handleRegimens(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := os.ReadFile("regimens.toml")
+	data, err := os.ReadFile(dataPath("regimens.toml"))
 	if err != nil {
 		http.Error(w, "regimens.toml not found", http.StatusNotFound)
 		return

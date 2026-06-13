@@ -6,6 +6,7 @@
       <button @click="currentView = 'Chemocalc'" :class="{ active: currentView === 'Chemocalc' }">🧪 化学療法計算</button>
       <button @click="currentView = 'ChemoSchedule'" :class="{ active: currentView === 'ChemoSchedule' }">📅 化学療法スケジュール</button>
       <button @click="currentView = 'DrugHoldChecker'" :class="{ active: currentView === 'DrugHoldChecker' }">💊 術前休薬チェック</button>
+      <button @click="currentView = 'LabFormatter'" :class="{ active: currentView === 'LabFormatter' }">🧾 検査結果整形</button>
       <button @click="currentView = 'PatientManager'" :class="{ active: currentView === 'PatientManager' }">📋 患者管理</button>
       <button @click="currentView = 'PreopSummary'" :class="{ active: currentView === 'PreopSummary' }">📝 術前サマリー</button>
     </nav>
@@ -18,11 +19,12 @@ import TopMenu from './components/TopMenu.vue'
 import Chemocalc from './components/Chemocalc.vue'
 import ChemoSchedule from './components/ChemoSchedule.vue'
 import DrugHoldChecker from './components/DrugHoldChecker.vue'
+import LabFormatter from './components/LabFormatter.vue'
 import PatientManager from './components/PatientManager.vue'
 import PreopSummary from './components/PreopSummary.vue'
 
 export default {
-  components: { TopMenu, Chemocalc, ChemoSchedule, DrugHoldChecker, PatientManager, PreopSummary },
+  components: { TopMenu, Chemocalc, ChemoSchedule, DrugHoldChecker, LabFormatter, PatientManager, PreopSummary },
   data() {
     return { currentView: 'TopMenu' }
   }
