@@ -1,0 +1,884 @@
+# =============================================================
+# 婦人科化学療法レジメン（参照用定義）
+# =============================================================
+# 用途: 婦人科がん化学療法レジメンの参照用まとめ。
+#       （化学療法スケジュール機能が使う data/regimens.toml とは別ファイル・別スキーマ）
+#
+# ⚠ 重要な注意:
+#   - 本ファイルは院内レジメン資料からの「事実情報の転記」です。用量・投与法は
+#     必ず最新の添付文書・各種ガイドライン・院内レジメン審査・主治医の判断を優先してください。
+#   - 用量の単位は特記なき限り mg/m²。AUC はカルボプラチンの Calvert 式目標 AUC。
+#     体重あたりは mg/kg、固定量は mg/body、経口の連日量は mg/日 と明記しています。
+#   - スキャン資料からの読み取りのため、誤りが残る可能性があります。臨床利用前に要検証。
+#
+# スキーマ:
+#   [[regimens]]
+#     id          : 短い識別子（重複しない）
+#     name        : レジメン名
+#     category    : 疾患カテゴリ
+#     indications : 適応（配列）
+#     line        : 治療ライン・位置づけ（記載があれば）
+#     cycle       : 投与間隔（例 "3週毎(21日)"）
+#     courses     : コース数の目安（記載があれば）
+#     notes       : 備考（前投薬・上限・変種など）
+#   [[regimens.drugs]]
+#     name, dose, route, days
+# =============================================================
+
+
+# =====================  卵巣がん・卵管がん・腹膜がん  =====================
+
+[[regimens]]
+id = "ov-tc-triweekly"
+name = "TC療法（triweekly）±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療・プラチナ感受性再発"
+cycle = "3週毎(21日)"
+notes = "ベバシズマブは維持を含め長期投与（最大22サイクル程度）。CTで2〜3サイクルごとに評価。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "175 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 6"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-dd-tc"
+name = "dose-dense TC療法"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療"
+cycle = "3週毎(21日)"
+notes = "パクリタキセルを毎週（Day 1・8・15）投与する dose-dense レジメン。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "80 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 6"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-dd-tc-ip"
+name = "dose-dense TC（IP）療法"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療"
+cycle = "3週毎(21日)"
+notes = "カルボプラチンは腹腔内投与（IP）。パクリタキセルは経静脈で毎週。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "80 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 6"
+  route = "腹腔内投与（IP）"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-dc"
+name = "DC療法（ドセタキセル＋カルボプラチン）"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療"
+cycle = "3週毎(21日)"
+notes = "パクリタキセル不耐（末梢神経障害・過敏症など）時の代替。"
+
+  [[regimens.drugs]]
+  name = "ドセタキセル"
+  dose = "75 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 5"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-weekly-tc"
+name = "weekly TC療法"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療"
+cycle = "毎週（パクリタキセル・カルボプラチンとも Day 1・8・15）"
+notes = "高齢者・PS低下例などで用いる weekly レジメン。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "60 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 2"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+
+[[regimens]]
+id = "ov-pldc"
+name = "PLDC療法（カルボプラチン＋PLD）±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ感受性再発"
+cycle = "4週毎(28日)"
+notes = "PLD＝リポソーム化ドキソルビシン。"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 5"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "リポソーム化ドキソルビシン（PLD）"
+  dose = "30 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "10 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-gc"
+name = "GC療法（カルボプラチン＋ゲムシタビン）±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ感受性再発"
+cycle = "3週毎(21日)"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 4"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ゲムシタビン"
+  dose = "1,000 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-pld"
+name = "PLD単剤 ±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "4週毎(28日)"
+
+  [[regimens.drugs]]
+  name = "リポソーム化ドキソルビシン（PLD）"
+  dose = "40〜50 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "10 mg/kg（2週毎）または 15 mg/kg（3週毎）"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-irinotecan"
+name = "イリノテカン単剤"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "5週毎（3週投与・2週休薬）※要確認"
+
+  [[regimens.drugs]]
+  name = "イリノテカン"
+  dose = "100 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+
+[[regimens]]
+id = "ov-gemcitabine"
+name = "ゲムシタビン単剤 ±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "4週毎(28日)"
+
+  [[regimens.drugs]]
+  name = "ゲムシタビン"
+  dose = "1,000 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-nogitecan"
+name = "ノギテカン（トポテカン）単剤 ±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "3週毎(21日)"
+notes = "連日5日投与。ベバシズマブ併用時はノギテカン 1.25 mg/m²。"
+
+  [[regimens.drugs]]
+  name = "ノギテカン"
+  dose = "1.25〜1.5 mg/m²"
+  route = "点滴静注"
+  days = "Day 1〜5（連日）"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-docetaxel"
+name = "ドセタキセル単剤"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "3週毎(21日)"
+
+  [[regimens.drugs]]
+  name = "ドセタキセル"
+  dose = "70〜75 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-weekly-ptx"
+name = "weekly パクリタキセル ±ベバシズマブ"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "3週または4週で1サイクル（毎週投与）"
+notes = "AURELIA（4週1サイクル）はベバシズマブ 10 mg/kg を2週毎、JGOG3023（3週1サイクル）は 15 mg/kg。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "80 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "10 mg/kg（2週毎）または 15 mg/kg（3週毎）"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-mirv"
+name = "ミルベツキシマブ ソラブタンシン（MIRV）単剤"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発（葉酸受容体α〔FRα〕陽性）"
+cycle = "3週毎(21日)"
+
+  [[regimens.drugs]]
+  name = "ミルベツキシマブ ソラブタンシン"
+  dose = "6 mg/kg（調整理想体重）"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "ov-etoposide-po"
+name = "経口エトポシド単剤"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "プラチナ抵抗性再発"
+cycle = "4週毎(28日)"
+
+  [[regimens.drugs]]
+  name = "エトポシド"
+  dose = "50 mg/m²/日"
+  route = "経口"
+  days = "Day 1〜21（連日）"
+
+
+[[regimens]]
+id = "ov-olaparib-maint"
+name = "オラパリブ ±ベバシズマブ（維持療法）"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療・プラチナ感受性再発の維持療法"
+cycle = "連日経口（維持）"
+notes = "ベバシズマブ併用は BRCA 変異/HRD 陽性などの対象。オラパリブは最大2年程度。"
+
+  [[regimens.drugs]]
+  name = "オラパリブ"
+  dose = "300 mg/回・1日2回"
+  route = "経口"
+  days = "連日"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "3週毎 Day 1"
+
+
+[[regimens]]
+id = "ov-niraparib-maint"
+name = "ニラパリブ単剤（維持療法）"
+category = "卵巣がん・卵管がん・腹膜がん"
+indications = ["卵巣がん", "卵管がん", "腹膜がん"]
+line = "初回治療・プラチナ感受性再発の維持療法（HRD 陽性を含む）"
+cycle = "連日経口（維持）"
+notes = "初回用量は体重 <77 kg または血小板 <15万/μL で 200 mg/日、それ以外は 300 mg/日。"
+
+  [[regimens.drugs]]
+  name = "ニラパリブ"
+  dose = "200 または 300 mg/日・1日1回"
+  route = "経口"
+  days = "連日"
+
+
+# =====================  卵巣胚細胞腫瘍  =====================
+
+[[regimens]]
+id = "gct-bep"
+name = "BEP療法"
+category = "卵巣胚細胞腫瘍"
+indications = ["卵巣胚細胞腫瘍"]
+cycle = "3週毎(21日)"
+courses = "3〜4サイクル"
+notes = "ブレオマイシンは肺毒性に注意（総投与量・KL-6 等モニタリング）。"
+
+  [[regimens.drugs]]
+  name = "エトポシド"
+  dose = "100 mg/m²"
+  route = "点滴静注"
+  days = "Day 1〜5（連日）"
+
+  [[regimens.drugs]]
+  name = "シスプラチン"
+  dose = "20 mg/m²"
+  route = "点滴静注"
+  days = "Day 1〜5（連日）"
+
+  [[regimens.drugs]]
+  name = "ブレオマイシン"
+  dose = "30 mg/body"
+  route = "点滴静注"
+  days = "Day 1, 8, 15（毎週）"
+
+
+[[regimens]]
+id = "gct-tip"
+name = "TIP療法"
+category = "卵巣胚細胞腫瘍"
+indications = ["卵巣胚細胞腫瘍（救済治療）"]
+cycle = "3週毎(21日)"
+courses = "4サイクル"
+notes = "投与日（イホスファミド・シスプラチンの連日日数）は資料で要確認。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "175〜250 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "イホスファミド"
+  dose = "1,500 mg/m²"
+  route = "点滴静注"
+  days = "Day 1〜4（要確認）"
+
+  [[regimens.drugs]]
+  name = "シスプラチン"
+  dose = "25 mg/m²"
+  route = "点滴静注"
+  days = "Day 1〜4（要確認）"
+
+
+# =====================  子宮頸がん  =====================
+
+[[regimens]]
+id = "cx-ccrt-cddp-pembro"
+name = "シスプラチン weekly ＋放射線療法 ＋ペムブロリズマブ（CCRT）"
+category = "子宮頸がん"
+indications = ["子宮頸がん（局所進行）"]
+line = "根治的同時化学放射線療法"
+cycle = "シスプラチンは毎週×5回"
+notes = "ペムブロリズマブは 200 mg を3週毎、のち 400 mg を6週毎（維持）。"
+
+  [[regimens.drugs]]
+  name = "シスプラチン"
+  dose = "40 mg/m²（1回最大70〜80 mg）"
+  route = "点滴静注"
+  days = "毎週（計5回）"
+
+  [[regimens.drugs]]
+  name = "放射線療法"
+  dose = "—"
+  route = "外部照射 ± 腔内照射"
+  days = "併用"
+
+  [[regimens.drugs]]
+  name = "ペムブロリズマブ"
+  dose = "200 mg/body（→維持 400 mg/body）"
+  route = "点滴静注"
+  days = "3週毎（維持は6週毎）"
+
+
+[[regimens]]
+id = "cx-tp"
+name = "TP療法（パクリタキセル24時間持続＋シスプラチン）±ベバシズマブ ±ペムブロリズマブ"
+category = "子宮頸がん"
+indications = ["子宮頸がん（進行・再発）"]
+cycle = "3週毎(21日)"
+notes = "パクリタキセルは24時間持続点滴。ペムブロリズマブは PD-L1 陽性などが対象。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "175 mg/m²"
+  route = "点滴静注（24時間持続）"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "シスプラチン"
+  dose = "50 mg/m²"
+  route = "点滴静注"
+  days = "Day 2"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ペムブロリズマブ（任意）"
+  dose = "200 mg/body"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "cx-tc"
+name = "TC療法 ±ベバシズマブ ±ペムブロリズマブ"
+category = "子宮頸がん"
+indications = ["子宮頸がん（進行・再発）"]
+cycle = "3週毎(21日)"
+notes = "ペムブロリズマブは 200 mg/body（のち 400 mg/body を6〜9週毎）。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "175 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 5"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ベバシズマブ（任意）"
+  dose = "15 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ペムブロリズマブ（任意）"
+  dose = "200 mg/body（→ 400 mg/body）"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "cx-irinotecan"
+name = "イリノテカン単剤"
+category = "子宮頸がん"
+indications = ["子宮頸がん（進行・再発）"]
+cycle = "4週毎(28日)"
+
+  [[regimens.drugs]]
+  name = "イリノテカン"
+  dose = "100 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8, 15"
+
+
+[[regimens]]
+id = "cx-cemiplimab"
+name = "セミプリマブ単剤"
+category = "子宮頸がん"
+indications = ["子宮頸がん（進行・再発）"]
+cycle = "3週毎(21日)"
+
+  [[regimens.drugs]]
+  name = "セミプリマブ"
+  dose = "350 mg/body"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "cx-tisotumab-vedotin"
+name = "チソツマブ ベドチン単剤"
+category = "子宮頸がん"
+indications = ["子宮頸がん（進行・再発）"]
+cycle = "3週毎(21日)"
+
+  [[regimens.drugs]]
+  name = "チソツマブ ベドチン"
+  dose = "2.0 mg/kg"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+# =====================  子宮体がん  =====================
+
+[[regimens]]
+id = "em-ap"
+name = "AP療法（ドキソルビシン＋シスプラチン）"
+category = "子宮体がん"
+indications = ["子宮体がん（進行・再発）"]
+cycle = "3週毎(21日)"
+notes = "ドキソルビシンの総投与量上限（500 mg/m²）に注意。"
+
+  [[regimens.drugs]]
+  name = "ドキソルビシン"
+  dose = "60 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "シスプラチン"
+  dose = "50 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "em-tc-pembro"
+name = "TC療法 ±ペムブロリズマブ"
+category = "子宮体がん"
+indications = ["子宮体がん（進行・再発）"]
+cycle = "3週毎(21日)"
+notes = "ペムブロリズマブは 200 mg/body（のち 400 mg/body を6週毎）。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "175 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 5"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "ペムブロリズマブ（任意）"
+  dose = "200 mg/body（→ 400 mg/body）"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "em-tc-durvalumab-olaparib"
+name = "TC療法 ＋デュルバルマブ ±オラパリブ"
+category = "子宮体がん"
+indications = ["子宮体がん（進行・再発）"]
+cycle = "3週毎(21日)＋維持療法"
+notes = "導入はTC＋デュルバルマブ。維持はデュルバルマブ（4週毎）±オラパリブ。"
+
+  [[regimens.drugs]]
+  name = "パクリタキセル"
+  dose = "175 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "カルボプラチン"
+  dose = "AUC 5"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "デュルバルマブ"
+  dose = "1,120 mg/body（維持は 1,500 mg/body・4週毎）"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "オラパリブ（維持・任意）"
+  dose = "300 mg/回・1日2回"
+  route = "経口"
+  days = "連日"
+
+
+[[regimens]]
+id = "em-docetaxel"
+name = "ドセタキセル単剤"
+category = "子宮体がん"
+indications = ["子宮体がん（進行・再発）"]
+cycle = "3週毎(21日)"
+
+  [[regimens.drugs]]
+  name = "ドセタキセル"
+  dose = "70 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "em-mpa"
+name = "MPA療法（メドロキシプロゲステロン）"
+category = "子宮体がん"
+indications = ["子宮体がん（進行・再発、ER/PgR 陽性・高分化）"]
+cycle = "連日経口（4週ごとに評価）"
+
+  [[regimens.drugs]]
+  name = "メドロキシプロゲステロン酢酸エステル（MPA）"
+  dose = "200 mg/日"
+  route = "経口"
+  days = "連日"
+
+
+[[regimens]]
+id = "em-lenvatinib-pembro"
+name = "レンバチニブ ＋ペムブロリズマブ"
+category = "子宮体がん"
+indications = ["子宮体がん（進行・再発）"]
+cycle = "レンバチニブ連日経口＋ペムブロリズマブ3週毎"
+notes = "ペムブロリズマブは 200 mg/body（のち 400 mg/body を6週毎）。"
+
+  [[regimens.drugs]]
+  name = "レンバチニブ"
+  dose = "20 mg/日"
+  route = "経口"
+  days = "連日"
+
+  [[regimens.drugs]]
+  name = "ペムブロリズマブ"
+  dose = "200 mg/body（→ 400 mg/body）"
+  route = "点滴静注"
+  days = "3週毎 Day 1"
+
+
+# =====================  子宮平滑筋肉腫  =====================
+
+[[regimens]]
+id = "lms-doxorubicin"
+name = "ドキソルビシン単剤"
+category = "子宮平滑筋肉腫"
+indications = ["子宮平滑筋肉腫"]
+cycle = "3週毎(21日)"
+notes = "総投与量上限（心毒性）に注意。"
+
+  [[regimens.drugs]]
+  name = "ドキソルビシン"
+  dose = "75 mg/m²"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "lms-trabectedin"
+name = "トラベクテジン単剤"
+category = "子宮平滑筋肉腫"
+indications = ["子宮平滑筋肉腫"]
+cycle = "3週毎(21日)"
+notes = "中心静脈ポートから24時間持続点滴。PD/不耐まで継続。"
+
+  [[regimens.drugs]]
+  name = "トラベクテジン"
+  dose = "1.2 mg/m²"
+  route = "点滴静注（24時間持続・CVポート）"
+  days = "Day 1"
+
+
+[[regimens]]
+id = "lms-pazopanib"
+name = "パゾパニブ単剤"
+category = "子宮平滑筋肉腫"
+indications = ["子宮平滑筋肉腫"]
+cycle = "連日経口"
+
+  [[regimens.drugs]]
+  name = "パゾパニブ"
+  dose = "800 mg/日（200 mg × 4錠）"
+  route = "経口"
+  days = "連日"
+
+
+[[regimens]]
+id = "lms-gem-docetaxel"
+name = "ゲムシタビン ＋ドセタキセル"
+category = "子宮平滑筋肉腫"
+indications = ["子宮平滑筋肉腫"]
+cycle = "3週毎(21日)"
+courses = "最大6サイクル"
+
+  [[regimens.drugs]]
+  name = "ゲムシタビン"
+  dose = "900 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8"
+
+  [[regimens.drugs]]
+  name = "ドセタキセル"
+  dose = "70 mg/m²"
+  route = "点滴静注"
+  days = "Day 8"
+
+
+[[regimens]]
+id = "lms-eribulin"
+name = "エリブリン単剤"
+category = "子宮平滑筋肉腫"
+indications = ["子宮平滑筋肉腫"]
+cycle = "3週毎(21日)"
+notes = "2週投与1週休薬。"
+
+  [[regimens.drugs]]
+  name = "エリブリン"
+  dose = "1.4 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 8"
+
+
+# =====================  MSI-High 腫瘍  =====================
+
+[[regimens]]
+id = "msi-pembrolizumab"
+name = "ペムブロリズマブ単剤"
+category = "MSI-High 腫瘍"
+indications = ["MSI-High（高頻度マイクロサテライト不安定性）固形がん"]
+cycle = "3週毎(21日)"
+notes = "200 mg/body を3週毎、のち 400 mg/body を6週毎。"
+
+  [[regimens.drugs]]
+  name = "ペムブロリズマブ"
+  dose = "200 mg/body（→ 400 mg/body）"
+  route = "点滴静注"
+  days = "Day 1"
+
+
+# =====================  ハイリスク絨毛性腫瘍（GTN）  =====================
+
+[[regimens]]
+id = "gtn-ema-co"
+name = "EMA/CO療法"
+category = "ハイリスク絨毛性腫瘍"
+indications = ["ハイリスク妊娠性絨毛性腫瘍（GTN）"]
+cycle = "2週毎（EMA週とCO週を交互）"
+notes = "β-hCG 陰性化後も少なくとも3サイクル追加。"
+
+  [[regimens.drugs]]
+  name = "エトポシド"
+  dose = "100 mg/m²"
+  route = "点滴静注"
+  days = "Day 1, 2"
+
+  [[regimens.drugs]]
+  name = "メトトレキサート"
+  dose = "300 mg/body"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "アクチノマイシンD"
+  dose = "0.5 mg/body"
+  route = "点滴静注"
+  days = "Day 1, 2"
+
+  [[regimens.drugs]]
+  name = "シクロホスファミド"
+  dose = "600 mg/m²"
+  route = "点滴静注"
+  days = "Day 8"
+
+  [[regimens.drugs]]
+  name = "ビンクリスチン"
+  dose = "1 mg/m²"
+  route = "点滴静注"
+  days = "Day 8"
+
+
+[[regimens]]
+id = "gtn-ema-ep"
+name = "EMA/EP療法"
+category = "ハイリスク絨毛性腫瘍"
+indications = ["ハイリスク妊娠性絨毛性腫瘍（GTN）"]
+cycle = "2週毎（EMA週とEP週を交互）"
+notes = "β-hCG 陰性化後も少なくとも3サイクル追加。"
+
+  [[regimens.drugs]]
+  name = "エトポシド"
+  dose = "EMA週 100 mg/m²（Day 1,2）／EP週 150 mg/m²（Day 8）"
+  route = "点滴静注"
+  days = "Day 1, 2, 8"
+
+  [[regimens.drugs]]
+  name = "メトトレキサート"
+  dose = "300 mg/body"
+  route = "点滴静注"
+  days = "Day 1"
+
+  [[regimens.drugs]]
+  name = "アクチノマイシンD"
+  dose = "0.5 mg/body"
+  route = "点滴静注"
+  days = "Day 1, 2"
+
+  [[regimens.drugs]]
+  name = "シスプラチン"
+  dose = "75 mg/m²"
+  route = "点滴静注"
+  days = "Day 8"
