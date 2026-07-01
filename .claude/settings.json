@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git rm *)",
+      "Bash(node /tmp/labgen.mjs /tmp/labFormat_after.mjs)",
+      "Bash(echo \"patients: $\\(curl -s http://localhost:8080/api/patients)",
+      "Bash(git restore *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(brew install *)",
+      "Bash(command -v pdftoppm)",
+      "Bash(command -v pdfinfo)",
+      "Bash(command -v pdftotext)",
+      "Bash(pdfinfo sample_data/daremo.pdf)",
+      "Bash(pdftotext -f 1 -l 5 sample_data/daremo.pdf -)",
+      "Bash(pdftoppm -f 2 -l 9 -r 150 -png sample_data/daremo.pdf /tmp/daremo/toc)",
+      "Bash(pdftoppm -f 7 -l 9 -r 300 -png sample_data/daremo.pdf /tmp/daremo/tochi)"
+    ]
+  }
+}

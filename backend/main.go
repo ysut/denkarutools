@@ -3,9 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
+	"runtime"
 	"sync"
 )
 
@@ -44,11 +47,12 @@ func writeJSONFile(name string, v interface{}) error {
 
 // 共通の患者管理データ用構造体
 type Patient struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Age       int    `json:"age"`
-	Disease   string `json:"disease"`
-	LastVisit string `json:"last_visit"`
+	ID           string `json:"id"`
+	Name         string `json:"name"`
+	Age          int    `json:"age"`
+	Disease      string `json:"disease"`
+	LastVisit    string `json:"last_visit"`
+	CVPortPlaced bool   `json:"cv_port_placed"`
 }
 
 // fileMu serializes access to the JSON data files so that concurrent
@@ -71,6 +75,24 @@ func withCORS(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// openBrowser launches the terminal's default browser at url. It runs the
+// platform-specific opener asynchronously and ignores errors, so a headless
+// environment (Docker/CI) without a browser does not abort startup.
+func openBrowser(url string) {
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "windows":
+		cmd = exec.Command("cmd", "/c", "start", "", url)
+	case "darwin":
+		cmd = exec.Command("open", url)
+	default:
+		cmd = exec.Command("xdg-open", url)
+	}
+	if err := cmd.Start(); err != nil {
+		fmt.Printf("Failed to open browser: %v\n", err)
+	}
+}
+
 func main() {
 	if d := os.Getenv("DENKARU_DATA_DIR"); d != "" {
 		dataDir = d
@@ -85,14 +107,32 @@ func main() {
 	mux.HandleFunc("/api/preop-summary", withCORS(handlePreopSummary))
 	mux.HandleFunc("/api/regimens", withCORS(handleRegimens))
 	mux.HandleFunc("/api/lab-sets", withCORS(handleLabSets))
+	mux.HandleFunc("/api/ward-board", withCORS(handleWardBoard))
+	mux.HandleFunc("/api/ward-lock", withCORS(handleWardLock))
+	mux.HandleFunc("/api/fibroid-sim", withCORS(handleFibroidSim))
 	mux.Handle("/", staticHandler())
 
 	addr := ":8080"
 	if p := os.Getenv("PORT"); p != "" {
 		addr = ":" + p
 	}
-	fmt.Printf("🚀 denkarutools server starting on %s (http://localhost%s)\n", addr, addr)
-	if err := http.ListenAndServe(addr, mux); err != nil {
+
+	// Create the listener up front so we only open the browser once the server
+	// is actually accepting connections (avoids a race where the browser loads
+	// before the server is ready).
+	ln, err := net.Listen("tcp", addr)
+	if err != nil {
+		fmt.Printf("Server failed to start: %v\n", err)
+		return
+	}
+
+	url := fmt.Sprintf("http://localhost%s", addr)
+	fmt.Printf("🚀 denkarutools server starting on %s (%s)\n", addr, url)
+	if os.Getenv("DENKARU_NO_BROWSER") == "" {
+		openBrowser(url)
+	}
+
+	if err := http.Serve(ln, mux); err != nil {
 		fmt.Printf("Server failed to start: %v\n", err)
 	}
 }

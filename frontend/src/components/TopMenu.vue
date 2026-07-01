@@ -33,6 +33,16 @@
         <h2>術前サマリー</h2>
         <p>術前情報の入力・保存・コピー</p>
       </div>
+      <div class="menu-card" @click="$emit('changeView', 'WardBoard')">
+        <div class="icon">🛏</div>
+        <h2>入院患者ボード</h2>
+        <p>入院患者の日々の記録・申し送り・印刷</p>
+      </div>
+      <div class="menu-card" @click="$emit('changeView', 'FibroidSim3D')">
+        <div class="icon">🧊</div>
+        <h2>子宮筋腫3Dシミュレーション</h2>
+        <p>子宮・付属器のまわりに筋腫を配置し回転表示</p>
+      </div>
     </div>
   </div>
 </template>

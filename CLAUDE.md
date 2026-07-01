@@ -11,6 +11,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **LabFormatter** (`検査結果整形ツール`) — Cleans pasted EMR lab results, adds units, appends CTCAE v5.0 grades (frontend-only; logic in `src/data/labFormat.js`)
 - **PatientManager** (`患者管理`) — Simple patient list with CRUD via JSON file
 - **PreopSummary** (`術前サマリー`) — Pre-operative summary form (cytology, biopsy, imaging findings) per patient
+- **WardBoard** (`入院患者ボード`) — Printable daily ward-round/handover board. Per-date boards saved as timestamped JSON (newest wins on read) for NAS conflict-avoidance; computes 術後日数/入院日数 relative to the viewed date; A4 landscape table print
+- **FibroidSim3D** (`子宮筋腫3Dシミュレーション`) — Pre-op 3D visualization of fibroids (spheres/ellipsoids) placed around a schematic uterus + bilateral adnexa. Mouse-drag rotation; placement via numeric/slider controls. Pure 2D-canvas software renderer (no WebGL, IE11-safe): the orthographic silhouette of a rotated ellipsoid is a closed-form ellipse, computed in `src/utils/ellipsoid3d.js`. Saved per-patient as JSON.
 
 ## Running the App
 - 院内電子カルテ端末で実行するアプリケーション
@@ -75,6 +77,9 @@ The frontend must stay IE11-compatible:
   `os.MkdirAll(dataDir)` runs on startup.
 - `preop.go` — `PreopSummary` handler with GET `?id=<ID>` and POST.
 - `labsets.go` — `/api/lab-sets` handler: GET returns the lab item sets array, POST replaces the whole array (used by LabFormatter to keep only chosen items).
+- `ward.go` — `/api/ward-board` handler: GET `?date=<YYYY-MM-DD>` returns the newest saved board for that date (empty board if none); GET `?prior=<YYYY-MM-DD>` returns the newest board before that date (carry-forward); POST writes a new timestamped file. Date params are regex-validated and `filepath.Base`-guarded.
+- `fibroid.go` — `/api/fibroid-sim` handler: GET `?id=<ID>` returns the saved fibroid layout (404 when none, so the frontend starts fresh), POST overwrites `fibroidsim_<ID>.json`. Same `filepath.Base` path-traversal guard as `preop.go`.
+- `wardlock.go` — `/api/ward-lock` handler: advisory (non-blocking) edit-presence lock for WardBoard. GET `?date=` lists active editors other than this terminal; POST `?date=` writes/refreshes this terminal's heartbeat (keyed by sanitized `os.Hostname()`); POST `?date=&release=1` removes it. Each terminal writes its own presence file (no single-file write contention on NAS). Locks auto-expire after a 120s TTL (frontend heartbeats every 30s while the board has unsaved changes), so a crashed/closed terminal's lock self-clears; stale files are deleted best-effort on each request.
 
 ### Data files
 All runtime data lives in **one directory** (`data/`, or `$DENKARU_DATA_DIR`).
@@ -83,6 +88,9 @@ Every backend file read/write goes through `dataPath()`.
 - `data/lab_sets.json` — named lab item sets for LabFormatter, `[{name, items[]}]` (**tracked** seed; overwritten at runtime via POST)
 - `data/patients.json` — patient list (**gitignored** — patient data)
 - `data/summary_<ID>.json` — per-patient preop summary (**gitignored**; path-traversal–safe via `filepath.Base`)
+- `data/ward/ward_<date>_<savetimestamp>.json` — WardBoard daily boards, one new file per save for NAS conflict-avoidance; reads pick the newest file for a date (**gitignored** — patient data)
+- `data/ward/wardlock_<date>_<host>.json` — WardBoard advisory edit-presence/heartbeat, one per editing terminal (hostname-keyed); auto-expires after 120s TTL and is cleaned up best-effort (**gitignored**; transient)
+- `data/fibroidsim_<ID>.json` — per-patient FibroidSim3D layout (**gitignored**; path-traversal–safe via `filepath.Base`)
 - `seed/` — committed sample patient data for local dev (copy into `data/` to populate a fresh checkout).
 
 ### Docker Compose

@@ -20,6 +20,9 @@ services:
       - ./scripts:/scripts:ro
       - go-cache:/go
     working_dir: /app
+    environment:
+      # No browser in the dev container; the server's auto-open would just fail.
+      DENKARU_NO_BROWSER: "1"
     ports:
       - "8080:8080"
     tty: true

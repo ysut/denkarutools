@@ -8,13 +8,14 @@
         <input v-model="newPatient.name" placeholder="氏名">
         <input v-model.number="newPatient.age" type="number" placeholder="年齢">
         <input v-model="newPatient.disease" placeholder="病名 (例: 卵巣癌 IIIC期)" class="disease-input">
+        <label class="cv-check"><input type="checkbox" v-model="newPatient.cv_port_placed"> CVポート留置済み</label>
         <button class="btn-save" @click="savePatient">保存</button>
       </div>
     </div>
 
     <table class="patient-table">
       <thead>
-        <tr><th>ID</th><th>名前</th><th>年齢</th><th>病名</th><th>最終受診日</th><th></th></tr>
+        <tr><th>ID</th><th>名前</th><th>年齢</th><th>病名</th><th>最終受診日</th><th>CVポート</th><th></th></tr>
       </thead>
       <tbody>
         <tr v-for="p in patients" :key="p.id">
@@ -23,6 +24,7 @@
           <td>{{ p.age }}</td>
           <td>{{ p.disease }}</td>
           <td>{{ p.last_visit }}</td>
+          <td class="center">{{ p.cv_port_placed ? '✓' : '—' }}</td>
           <td class="cell-actions">
             <button class="btn-edit" @click="editPatient(p)">編集</button>
             <button class="btn-delete" @click="deletePatient(p)">削除</button>
@@ -44,7 +46,7 @@ export default {
   mounted() { this.loadData(); },
   methods: {
     emptyPatient() {
-      return { id: '', name: '', age: '', disease: '', last_visit: new Date().toISOString().split('T')[0] };
+      return { id: '', name: '', age: '', disease: '', last_visit: new Date().toISOString().split('T')[0], cv_port_placed: false };
     },
     loadData() {
       fetch('/api/patients')
@@ -94,6 +96,9 @@ h1 { color: #00493c; }
 .form-row > * { margin: 0 10px 8px 0; }
 .form-row input { padding: 9px; border: 1px solid #c8c8c8; border-radius: 6px; font-size: 1em; }
 .disease-input { flex-grow: 1; min-width: 200px; }
+.cv-check { display: inline-flex; align-items: center; white-space: nowrap; color: #00493c; }
+.cv-check input { margin-right: 5px; }
+.center { text-align: center; }
 .btn-save { padding: 9px 24px; background: #00715d; color: #fff; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
 .btn-save:hover { opacity: 0.88; }
 .patient-table { width: 100%; border-collapse: collapse; background: #fff; }

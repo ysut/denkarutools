@@ -50,6 +50,8 @@ tmp/
 # Config (data/regimens.toml, data/lab_sets.json) IS tracked as initial values.
 data/patients.json
 data/summary_*.json
+data/ward/
+data/fibroidsim_*.json
 
 # Python
 __pycache__/
