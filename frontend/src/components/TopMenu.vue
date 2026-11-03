@@ -13,6 +13,11 @@
         <h2>化学療法スケジュール</h2>
         <p>患者さん用スケジュール用紙の作成・印刷</p>
       </div>
+      <div class="menu-card" @click="$emit('changeView', 'EmbryoTransferSchedule')">
+        <div class="icon">🗓</div>
+        <h2>胚移植スケジュール</h2>
+        <p>ホルモン補充周期の服薬・受診日カレンダー作成・印刷</p>
+      </div>
       <div class="menu-card" @click="$emit('changeView', 'DrugHoldChecker')">
         <div class="icon">💊</div>
         <h2>術前休薬チェッカー</h2>

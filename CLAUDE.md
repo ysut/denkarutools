@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **denkarutools** is a Japanese medical tools web application targeting gynecology/obstetrics. It provides:
 - **Chemocalc** (`化学療法計算`) — Carboplatin (Calvert formula) and BSA-based drug dose calculator
 - **ChemoSchedule** (`化学療法スケジュール`) — Printable chemotherapy schedule sheets; regimens defined in `regimens.toml`
+- **EmbryoTransferSchedule** (`胚移植スケジュール`) — Printable HR-cycle frozen embryo transfer schedule (HR-BT / HR-ET, from `docs/HR-images`): estrogen/progestin doses per day, visits, transfer & pregnancy-test dates as list or month calendar (frontend-only; logic + defaults in `src/data/hrtSchedule.js`)
 - **DrugHoldChecker** (`術前休薬チェッカー`) — Perioperative drug-hold/resume guidance from free-text drug input
 - **LabFormatter** (`検査結果整形ツール`) — Cleans pasted EMR lab results, adds units, appends CTCAE v5.0 grades (frontend-only; logic in `src/data/labFormat.js`)
 - **PatientManager** (`患者管理`) — Simple patient list with CRUD via JSON file
@@ -16,7 +17,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Running the App
 - 院内電子カルテ端末で実行するアプリケーション
-- オフラインの端末で動かす
+- 基本的にはオフラインの端末で動かす
 - 各端末にはInternet Explorer 11が入っている
 - goサーバーをローカルで立ち上げてアプリケーションを使う
 - ログファイルやコンフィグは、利用者全員がアクセスできるNASに保存する

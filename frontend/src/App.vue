@@ -5,6 +5,7 @@
       <button @click="go('TopMenu')" :class="{ active: currentView === 'TopMenu' }">🏠 トップ</button>
       <button @click="go('Chemocalc')" :class="{ active: currentView === 'Chemocalc' }">🧪 化学療法計算</button>
       <button @click="go('ChemoSchedule')" :class="{ active: currentView === 'ChemoSchedule' }">📅 化学療法スケジュール</button>
+      <button @click="go('EmbryoTransferSchedule')" :class="{ active: currentView === 'EmbryoTransferSchedule' }">🗓 胚移植スケジュール</button>
       <button @click="go('DrugHoldChecker')" :class="{ active: currentView === 'DrugHoldChecker' }">💊 術前休薬チェック</button>
       <button @click="go('LabFormatter')" :class="{ active: currentView === 'LabFormatter' }">🧾 検査結果整形</button>
       <button @click="go('PatientManager')" :class="{ active: currentView === 'PatientManager' }">📋 患者管理</button>
@@ -20,6 +21,7 @@
 import TopMenu from './components/TopMenu.vue'
 import Chemocalc from './components/Chemocalc.vue'
 import ChemoSchedule from './components/ChemoSchedule.vue'
+import EmbryoTransferSchedule from './components/EmbryoTransferSchedule.vue'
 import DrugHoldChecker from './components/DrugHoldChecker.vue'
 import LabFormatter from './components/LabFormatter.vue'
 import PatientManager from './components/PatientManager.vue'
@@ -28,7 +30,7 @@ import WardBoard from './components/WardBoard.vue'
 import FibroidSim3D from './components/FibroidSim3D.vue'
 
 export default {
-  components: { TopMenu, Chemocalc, ChemoSchedule, DrugHoldChecker, LabFormatter, PatientManager, PreopSummary, WardBoard, FibroidSim3D },
+  components: { TopMenu, Chemocalc, ChemoSchedule, EmbryoTransferSchedule, DrugHoldChecker, LabFormatter, PatientManager, PreopSummary, WardBoard, FibroidSim3D },
   data() {
     return { currentView: 'TopMenu' }
   },
